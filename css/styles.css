@@ -58,6 +58,8 @@ nav {
 }
 nav h1 {
   margin: auto;
+  padding-left: 30px;
+  padding-right: 30px;
 }
 nav h1 a {
   color: #fff;
@@ -147,6 +149,7 @@ nav h1 a {
   text-align: center;
   display: flex;
   flex-wrap: wrap;
+  justify-content: center
 }
 #restaurants-list li {
   background-color: #fff;
@@ -169,7 +172,6 @@ nav h1 a {
   display: block;
   margin: 0;
   max-width: 100%;
-  min-height: 248px;
   min-width: 100%;
 }
 
@@ -294,4 +296,10 @@ nav h1 a {
 }
 #restaurant-hours td {
   color: #666;
+}
+
+@media (max-width:647px) {
+  .filter-options {
+    flex-direction: column;
+  }
 }
