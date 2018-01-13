@@ -91,7 +91,7 @@ nav h1 a {
 
 /* Add a color to all links inside the list */
 #breadcrumb li a {
-    color: #0275d8;
+    color: #165B8E;
     text-decoration: none;
 }
 
@@ -233,7 +233,7 @@ nav h1 a {
   box-sizing: border-box;
 }
 #restaurant-name {
-  color: #f18200;
+  color: #165B8E;
   font-family: Arial,sans-serif;
   font-size: 20pt;
   font-weight: 200;
@@ -272,7 +272,7 @@ nav h1 a {
   padding: 30px 40px 80px;
 }
 #reviews-container h2 {
-  color: #f58500;
+  color: #165B8E;
   font-size: 24pt;
   font-weight: 300;
   letter-spacing: -1px;
