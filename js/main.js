@@ -82,6 +82,17 @@ window.initMap = () => {
     center: loc,
     scrollwheel: false
   });
+
+  // removes focus assuming map doesn't need focus
+  // https://stackoverflow.com/questions/30531075/
+  google.maps.event.addListener(self.map, "tilesloaded", function(){
+    [].slice.apply(document.querySelectorAll('#map a,div,button')).forEach(function(item) {
+      item.setAttribute('tabindex','-1');
+    });
+    // div for map satellite buttons
+    // button for right side zoom buttons
+  });
+
   updateRestaurants();
 }
 
@@ -139,6 +150,7 @@ fillRestaurantsHTML = (restaurants = self.restaurants) => {
  */
 createRestaurantHTML = (restaurant) => {
   const li = document.createElement('li');
+  li.setAttribute('role','listitem');
 
   const image = document.createElement('img');
   image.className = 'restaurant-img';
@@ -146,7 +158,7 @@ createRestaurantHTML = (restaurant) => {
   image.src = DBHelper.imageUrlForRestaurant(restaurant);
   li.append(image);
 
-  const name = document.createElement('h1');
+  const name = document.createElement('h3');
   name.innerHTML = restaurant.name;
   li.append(name);
 
@@ -180,3 +192,5 @@ addMarkersToMap = (restaurants = self.restaurants) => {
     self.markers.push(marker);
   });
 }
+
+

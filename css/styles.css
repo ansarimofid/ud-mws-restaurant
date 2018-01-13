@@ -226,6 +226,11 @@ nav h1 a {
   height: 100%;
   width: 100%;
 }
+
+.inside #map div:hover{
+/* Focus on map */
+}
+
 .inside #footer {
   bottom: 0;
   position: absolute;
