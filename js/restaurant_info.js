@@ -14,6 +14,17 @@ window.initMap = () => {
         center: restaurant.latlng,
         scrollwheel: false
       });
+
+       // removes focus assuming map doesn't need focus
+      // https://stackoverflow.com/questions/30531075/
+      google.maps.event.addListener(self.map, "tilesloaded", function(){
+        [].slice.apply(document.querySelectorAll('#map a,div,button')).forEach(function(item) {
+          item.setAttribute('tabindex','-1');
+        });
+        // div for map satellite buttons
+        // button for right side zoom buttons
+      });
+
       fillBreadcrumb();
       DBHelper.mapMarkerForRestaurant(self.restaurant, self.map);
     }
@@ -96,7 +107,7 @@ fillRestaurantHoursHTML = (operatingHours = self.restaurant.operating_hours) => 
  */
 fillReviewsHTML = (reviews = self.restaurant.reviews) => {
   const container = document.getElementById('reviews-container');
-  const title = document.createElement('h2');
+  const title = document.createElement('h3');
   title.innerHTML = 'Reviews';
   container.appendChild(title);
 
@@ -118,6 +129,7 @@ fillReviewsHTML = (reviews = self.restaurant.reviews) => {
  */
 createReviewHTML = (review) => {
   const li = document.createElement('li');
+  li.setAttribute('role','listitem')
   const name = document.createElement('strong');
   name.innerHTML = review.name;
   li.appendChild(name);
@@ -144,6 +156,9 @@ fillBreadcrumb = (restaurant=self.restaurant) => {
   const breadcrumb = document.getElementById('breadcrumb');
   const li = document.createElement('li');
   li.innerHTML = restaurant.name;
+  
+  // https://www.w3.org/TR/wai-aria-practices/examples/breadcrumb/index.html
+  li.setAttribute('aria-current', 'page');
   breadcrumb.appendChild(li);
 }
 
