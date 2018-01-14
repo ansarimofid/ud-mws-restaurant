@@ -163,7 +163,7 @@ nav h1 a {
   width: 270px;
 }
 
-#restaurants-list li  h1, #restaurants-list li  p {
+#restaurants-list li  h3, #restaurants-list li  p {
   padding: 0 30px;
 }
 
@@ -179,7 +179,7 @@ nav h1 a {
   flex-grow: 1
 }
 
-#restaurants-list li h1 {
+#restaurants-list li h3 {
   color: #165B8E;
   font-family: Arial,sans-serif;
   font-size: 14pt;
@@ -225,10 +225,6 @@ nav h1 a {
   background-color: #ccc;
   height: 100%;
   width: 100%;
-}
-
-.inside #map div:hover{
-/* Focus on map */
 }
 
 .inside #footer {

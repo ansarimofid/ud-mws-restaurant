@@ -83,15 +83,17 @@ window.initMap = () => {
     scrollwheel: false
   });
 
+ /*  Commented code after reviewer said that map needs to be included in focus */
+
   // removes focus assuming map doesn't need focus
   // https://stackoverflow.com/questions/30531075/
-  google.maps.event.addListener(self.map, "tilesloaded", function(){
-    [].slice.apply(document.querySelectorAll('#map a,div,button')).forEach(function(item) {
-      item.setAttribute('tabindex','-1');
-    });
-    // div for map satellite buttons
-    // button for right side zoom buttons
-  });
+  // google.maps.event.addListener(self.map, "tilesloaded", function(){
+  //   [].slice.apply(document.querySelectorAll('#map a,div,button')).forEach(function(item) {
+  //     item.setAttribute('tabindex','-1');
+  //   });
+  //   // div for map satellite buttons
+  //   // button for right side zoom buttons
+  // });
 
   updateRestaurants();
 }
@@ -154,7 +156,7 @@ createRestaurantHTML = (restaurant) => {
 
   const image = document.createElement('img');
   image.className = 'restaurant-img';
-  image.alt = restaurant.name;
+  image.alt = restaurant.name +' restautrant';
   image.src = DBHelper.imageUrlForRestaurant(restaurant);
   li.append(image);
 
