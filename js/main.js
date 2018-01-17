@@ -162,15 +162,18 @@ createRestaurantHTML = (restaurant) => {
 
   const name = document.createElement('h3');
   name.innerHTML = restaurant.name;
+  name.tabIndex = 0;
   li.append(name);
 
   const neighborhood = document.createElement('p');
+  neighborhood.tabIndex = 0;
   neighborhood.innerHTML = restaurant.neighborhood;
   li.append(neighborhood);
 
   const address = document.createElement('p');
   address.className = 'restaurant-address';
   address.innerHTML = restaurant.address;
+  address.tabIndex = 0;
   li.append(address);
 
   const more = document.createElement('a');
