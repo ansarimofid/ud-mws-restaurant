@@ -8,6 +8,17 @@ importScripts('/js/idb.min.js');
 let version = '1.4.0';
 
 let staticCacheName = 'mws-rrs1-' + version;
+
+self.addEventListener('activate', event => {
+  event.waitUntil(
+    createDB()
+  )
+})
+
+self.addEventListener('activate',  event => {
+  event.waitUntil(self.clients.claim());
+});
+
 /* 
 * Creating indexDb Database
 */
@@ -39,16 +50,6 @@ function addAllToDB(items) {
   })
 }
 
-self.addEventListener('activate', event => {
-  event.waitUntil(
-    createDB()
-  )
-})
-
-self.addEventListener('activate',  event => {
-  event.waitUntil(self.clients.claim());
-});
-
 
 /*
  * Adapted from https://developers.google.com/web/ilt/pwa/lab-caching-files-with-service-worker
@@ -70,10 +71,10 @@ self.addEventListener('fetch', function(event) {
       if (!rs.length) {
         console.log('Attempting to fetch from network ', event.request);
         
-        fetch(event.request.url)
+        fetch(event.request)
           .then(function(response){
             if (response.status === 200) {
-              response.json()
+              response.clone().json()
               .then(function(data) {
                 console.log(event.request.url, 'json data', data)
                 addAllToDB(data);
