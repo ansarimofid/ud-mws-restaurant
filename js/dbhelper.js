@@ -17,32 +17,19 @@ class DBHelper {
    */
   static fetchRestaurants(callback) {
     fetch(DBHelper.DATABASE_URL)
-    .then(response => {
-      if (response.status === 200) {
-        response.json()
-          .then(json => {
-            console.log("Response for request", json);
-            callback(null, json)
-          })
-          .catch(error => callback(error, null));
-      } else {
-        callback((`Request failed. Returned status of ${response.status}`), null);
+      .then(response => {
+        if (response.status === 200) {
+          response.json()
+            .then(json => {
+              callback(null, json)
+            }).catch(error => {
+              callback(error, null)
+            });
+        } else {
+          callback((`Request failed. Returned status of ${response.status}`), null);
+        }
       }
-    }).catch(error => callback(error, null));
-    // let xhr = new XMLHttpRequest();
-    // xhr.open('GET', DBHelper.DATABASE_URL);
-    // xhr.onload = () => {
-    //   if (xhr.status === 200) { // Got a success response from server!
-    //     const json = JSON.parse(xhr.responseText);
-    //     const restaurants = json;
-    //     console.log(json);
-    //     callback(null, restaurants);
-    //   } else { // Oops!. Got an error from server.
-    //     const error = (`Request failed. Returned status of ${xhr.status}`);
-    //     callback(error, null);
-    //   }
-    // };
-    // xhr.send();
+    ).catch(error => callback(error, null));
   }
 
   /**
