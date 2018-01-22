@@ -68,9 +68,14 @@ fillRestaurantHTML = (restaurant = self.restaurant) => {
   address.innerHTML = restaurant.address;
 
   const image = document.getElementById('restaurant-img');
-  image.className = 'restaurant-img';
-  image.src = DBHelper.imageUrlForRestaurant(restaurant);
+  image.className = 'restaurant-img js-lazy-image';
+  // image.src = DBHelper.imageUrlForRestaurant(restaurant);
+  var imgSrc = DBHelper.imageUrlForRestaurant(restaurant);
   image.alt = restaurant.name +' restautrant';
+
+  image.setAttribute('data-src', imgSrc);
+
+  image.onload =  lazyLoad();
 
   const cuisine = document.getElementById('restaurant-cuisine');
   cuisine.innerHTML = restaurant.cuisine_type;
