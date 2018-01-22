@@ -2,7 +2,7 @@ let restaurants,
   neighborhoods,
   cuisines
 var map
-var markers = []
+var markers = [];
 
 /**
  * Fetch neighborhoods and cuisines as soon as the page is loaded.
@@ -10,6 +10,7 @@ var markers = []
 document.addEventListener('DOMContentLoaded', (event) => {
   fetchNeighborhoods();
   fetchCuisines();
+  // lazyLoad();
 });
 
 /**
@@ -155,9 +156,11 @@ createRestaurantHTML = (restaurant) => {
   li.setAttribute('role','listitem');
 
   const image = document.createElement('img');
-  image.className = 'restaurant-img';
+  image.className = 'restaurant-img js-lazy-image';
   image.alt = restaurant.name +' restautrant';
-  image.src = DBHelper.imageUrlForRestaurant(restaurant);
+  var imgSrc = DBHelper.imageUrlForRestaurant(restaurant);
+
+  image.setAttribute('data-src', imgSrc);
   li.append(image);
 
   const name = document.createElement('h3');
@@ -179,7 +182,9 @@ createRestaurantHTML = (restaurant) => {
   const more = document.createElement('a');
   more.innerHTML = 'View Details';
   more.href = DBHelper.urlForRestaurant(restaurant);
-  li.append(more)
+  li.append(more);
+
+  li.onload =  lazyLoad();
 
   return li
 }
