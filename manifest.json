@@ -1,0 +1,31 @@
+{
+  "short_name": "AirHorner",
+  "name": "Kinlan's AirHorner of Infamy",
+  "description": "Restaurant APP to find neighbourhood restaurant",
+  "background_color": "#000000",
+  "theme_color": "#165B8E",
+  "display": "standalone",
+  "icons": [
+    {
+      "src": "img/app_icons/app_icon_48px.png",
+      "type": "image/png",
+      "sizes": "48x48"
+    },
+    {
+      "src": "img/app_icons/app_icon_96px.png",
+      "type": "image/png",
+      "sizes": "96x96"
+    },
+    {
+      "src": "img/app_icons/app_icon_192px.png",
+      "type": "image/png",
+      "sizes": "192x192"
+    },
+    {
+      "src": "img/app_icons/app_icon_512px.png",
+      "type": "image/png",
+      "sizes": "512x512"
+    }
+  ],
+  "start_url": "index.html?launcher=true"
+}
