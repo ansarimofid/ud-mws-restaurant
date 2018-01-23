@@ -21,7 +21,7 @@ self.addEventListener('activate',  event => {
 
 
 /* 
-* Creating indexDb Database
+* Creates indexDb Database
 */
 
 function createDB() {
@@ -32,6 +32,10 @@ function createDB() {
     var store = upgradeDB.createObjectStore('restaurant-list', {keyPath: 'id'})
   })
 }
+
+/* 
+* Adds data to Database
+*/
 
 function addAllToDB(items) {
   idb.open('restautrants', 1).then(function(db) {
@@ -60,8 +64,8 @@ function addAllToDB(items) {
 self.addEventListener('fetch', function(event) {
   console.log('Fetch event for ', event.request.url);
 
+  // Checks if request is for restaurant
   if (event.request.url.indexOf('localhost:1337/restaurants') >= 0) {
-
     event.respondWith(
     idb.open('restautrants', 1).then(function(db) {
       var tx = db.transaction('restaurant-list', 'readonly');
@@ -69,15 +73,17 @@ self.addEventListener('fetch', function(event) {
       return store.getAll();
     }).then((rs) => {
       console.log("All Data", rs);
+      // If if indexdb contains data
       if (!rs.length) {
         console.log('Attempting to fetch from network ', event.request);
-        
+        // Fetches data from network
         fetch(event.request)
           .then(function(response){
             if (response.status === 200) {
               response.clone().json()
               .then(function(data) {
                 console.log(event.request.url, 'json data', data)
+                // Adds data to database
                 addAllToDB(data);
                 console.log('Saving to DB and responding from FETCH', data);
                 return response;
@@ -89,6 +95,7 @@ self.addEventListener('fetch', function(event) {
             }
           })
       } else {
+        // Responding when data is available in cache
         console.log('Responding from IndexDB');
 
         const myHeaders = {
