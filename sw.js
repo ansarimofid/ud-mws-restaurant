@@ -19,6 +19,7 @@ self.addEventListener('activate',  event => {
   event.waitUntil(self.clients.claim());
 });
 
+
 /* 
 * Creating indexDb Database
 */
