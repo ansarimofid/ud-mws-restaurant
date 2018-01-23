@@ -1,7 +1,8 @@
 {
-  "short_name": "AirHorner",
-  "name": "Kinlan's AirHorner of Infamy",
+  "short_name": "RestaurantReview",
+  "name": "Restaurant Review APP",
   "description": "Restaurant APP to find neighbourhood restaurant",
+  "start_url": "index.html?launcher=true",
   "background_color": "#000000",
   "theme_color": "#165B8E",
   "display": "standalone",
@@ -26,6 +27,5 @@
       "type": "image/png",
       "sizes": "512x512"
     }
-  ],
-  "start_url": "index.html?launcher=true"
+  ]
 }

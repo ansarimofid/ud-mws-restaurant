@@ -81,7 +81,8 @@ window.initMap = () => {
   self.map = new google.maps.Map(document.getElementById('map'), {
     zoom: 12,
     center: loc,
-    scrollwheel: false
+    scrollwheel: false,
+    format:'jpg'
   });
 
  /*  Commented code after reviewer said that map needs to be included in focus */
@@ -160,7 +161,7 @@ createRestaurantHTML = (restaurant) => {
   image.alt = restaurant.name +' restautrant';
   var imgSrc = DBHelper.imageUrlForRestaurant(restaurant);
 
-  image.setAttribute('data-src', imgSrc);
+  image.setAttribute('data-src', imgSrc+'_thumb.jpg');
   li.append(image);
 
   const name = document.createElement('h3');
