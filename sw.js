@@ -15,17 +15,17 @@ self.addEventListener('activate', event => {
   )
 })
 
-self.addEventListener('activate',  event => {
+self.addEventListener('activate', event => {
   event.waitUntil(self.clients.claim());
 });
 
 
-/* 
-* Creates indexDb Database
-*/
+/*
+ * Creates indexDb Database
+ */
 
 function createDB() {
-  idb.open('restaurants-reviews', 1, function(upgradeDB) {
+  idb.open('restaurants-reviews', 1, function (upgradeDB) {
 
     console.log("Creating Restaurant List Object Store");
 
@@ -34,22 +34,22 @@ function createDB() {
   })
 }
 
-/* 
-* Adds data to Database
-*/
+/*
+ * Adds data to Database
+ */
 
 function addAllToDB(storeName, items) {
-  idb.open('restaurants-reviews', 1).then(function(db) {
+  idb.open('restaurants-reviews', 1).then(function (db) {
     var tx = db.transaction(storeName, 'readwrite');
     var store = tx.objectStore(storeName);
 
-    return Promise.all(items.map(function(item) {
+    return Promise.all(items.map(function (item) {
         console.log("Adding Item", item);
         return store.put(item);
       })
-    ).then(function(e) {
+    ).then(function (e) {
       console.log("Added Successfully");
-    }).catch(function(e) {
+    }).catch(function (e) {
       tx.abort();
       console.log(e);
     })
@@ -62,115 +62,96 @@ function addAllToDB(storeName, items) {
  * Another way to cache is to cache it in 'install' event, but I am not sure if rubrics demands that
  * It says visited page should show when there is no network access so only caching requests as they happen
  */
-self.addEventListener('fetch', function(event) {
-  console.log('Fetch event for ', event.request.url);
 
-  // Checks if request is for restaurant
-  if (event.request.url.indexOf('localhost:1337/restaurants') >= 0 || event.request.url.indexOf('localhost:1337/reviews') >= 0) {
-    var lastIndexOfSlash = event.request.url.lastIndexOf('/');
-    var storeName = event.request.url.substring(lastIndexOfSlash + 1);
+addEventListener('fetch', event => {
+  // Prevent the default, and handle the request ourselves.
+  event.respondWith(async function () {
 
-    event.respondWith(
-    idb.open('restaurants-reviews', 1).then(function(db) {
+    if (event.request.url.indexOf('localhost:1337/restaurants') >= 0 || event.request.url.indexOf('localhost:1337/reviews') >= 0) {
+      var lastIndexOfSlash = event.request.url.lastIndexOf('/');
+      var storeName = event.request.url.substring(lastIndexOfSlash + 1);
 
-      console.log("RequestDB", storeName);
+      return idb.open('restaurants-reviews', 1).then(function (db) {
 
-      var tx = db.transaction(storeName, 'readonly');
-      var store = tx.objectStore(storeName);
-      return store.getAll();
-    }).then((rs) => {
-      console.log("All Data", rs);
-      // If if indexdb contains data
-      if (!rs.length) {
-        console.log('Attempting to fetch from network ', event.request);
-        // Fetches data from network
-        fetch(event.request)
-          .then(function(response){
-            if (response.status === 200) {
-              response.clone().json()
-              .then(function(data) {
-                console.log(event.request.url, 'json data', data)
-                // Adds data to database
-                addAllToDB( storeName, data);
-                console.log('Saving to DB and responding from FETCH', data);
-                return response;
-                // event.respondWith(data);
-              })
-            }
-            else {
-              callback((`Request failed. Returned status of ${response.status}`), null);
-            }
-          })
-      } else {
-        // Responding when data is available in cache
-        console.log('Responding from IndexDB');
+        console.log("RequestDB", storeName);
 
-        const myHeaders = {
-          "Content-Type":'json'
-        };
-  
-        const init = {
-          'type':'cors',
-          'headers': myHeaders,
-          'status' : 200,
-          'statusText' : 'OKS',
-        };
+        var tx = db.transaction(storeName, 'readonly');
+        var store = tx.objectStore(storeName);
+        return store.getAll();
+      }).then((rs) => {
+        console.log("All Data", rs);
+        // If if indexdb contains data
+        if (!rs.length) {
+          console.log('Attempting to fetch from network ', event.request);
+          // Fetches data from network
+          return fetch(event.request)
+            .then(function (response) {
 
-        var respo = new Response(JSON.stringify(rs), {
-          headers : new Headers({
-            'Access-Control-Allow-Credentials':'true',
-            'Content-type': 'application/json'
-          }),
-          type : 'cors',
-          status: 200
-        });
-        console.log("Response to sent to fetch ",respo);
+              return response.json()
+                .then(function (data) {
+                  console.log(event.request.url, 'json data', data);
+                  // Adds data to database
+                  addAllToDB(storeName, data);
+                  console.log('Saving to DB and responding from FETCH', data);
+                  return response;
+                  // event.respondWith(data);
+                })
+            })
+        } else {
+          // Responding when data is available in cache
+          console.log('Responding from IndexDB');
 
-        return respo;
-        // event.respondWith(rs);
-      }
-    })
-    )
-  } else {
-    event.respondWith(
-      caches.match(event.request).then(function(response) {
-        if (response) {
-          console.log('Found ', event.request.url, ' in cache');
-          return response;
+          var init = {
+            status: 200,
+            statusText: "OK",
+            headers: {'Content-Type': 'application/jso'}
+          };
+
+          const respo = new Response(JSON.stringify(rs), init);
+          console.log("Response to send to fetch ", rs);
+          return respo;
         }
-  
-        console.log('Network request for ', event.request.url);
-        return fetch(event.request)
-          .then(function(response) {
-            // TODO 5 - Respond with custom 404 page
-            return caches.open(staticCacheName).then(function(cache) {
-              if (event.request.url.indexOf('maps') < 0) { // don't cache google maps
-                // ^ it's not a site asset, is it?
-                console.log('Saving ' + event.request.url + ' into cache.');
-                cache.put(event.request.url, response.clone());
-              }
-              return response;
-            });
-          });
-  
-      }).catch(function(error) {
-        // TODO 6 - Respond with custom offline page
       })
-    );  
-  }
+    } else {
+
+      // Try to get the response from a cache.
+      const cachedResponse = await caches.match(event.request);
+
+      // Return it if we found one.
+      if (cachedResponse) {
+        console.log('Found ', event.request.url, ' in cache');
+        return cachedResponse;
+      }
+
+      // If we didn't find a match in the cache, use the network.
+      console.log('Network request for ', event.request.url);
+      return fetch(event.request)
+        .then(function (cachedResponse) {
+          // TODO 5 - Respond with custom 404 page
+          return caches.open(staticCacheName).then(function (cache) {
+            if (event.request.url.indexOf('maps') < 0) { // don't cache google maps
+              // ^ it's not a site asset, is it?
+              console.log('Saving ' + event.request.url + ' into cache.');
+              cache.put(event.request.url, cachedResponse.clone());
+            }
+            return cachedResponse;
+          });
+        });
+    }
+  }());
 });
 
 
 /* delete old cache */
-self.addEventListener('activate', function(event) {
+self.addEventListener('activate', function (event) {
   console.log('Activating new service worker...');
 
   var cacheWhitelist = [staticCacheName];
 
   event.waitUntil(
-    caches.keys().then(function(cacheNames) {
+    caches.keys().then(function (cacheNames) {
       return Promise.all(
-        cacheNames.map(function(cacheName) {
+        cacheNames.map(function (cacheName) {
           if (cacheWhitelist.indexOf(cacheName) === -1) {
             return caches.delete(cacheName);
           }
