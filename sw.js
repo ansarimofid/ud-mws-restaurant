@@ -25,11 +25,12 @@ self.addEventListener('activate',  event => {
 */
 
 function createDB() {
-  idb.open('restautrants', 1, function(upgradeDB) {
+  idb.open('restaurants-reviews', 1, function(upgradeDB) {
 
     console.log("Creating Restaurant List Object Store");
 
-    var store = upgradeDB.createObjectStore('restaurant-list', {keyPath: 'id'})
+    var restStore = upgradeDB.createObjectStore('restaurants', {keyPath: 'id'})
+    var reviewStore = upgradeDB.createObjectStore('reviews', {keyPath: 'id'})
   })
 }
 
@@ -37,10 +38,10 @@ function createDB() {
 * Adds data to Database
 */
 
-function addAllToDB(items) {
-  idb.open('restautrants', 1).then(function(db) {
-    var tx = db.transaction('restaurant-list', 'readwrite');
-    var store = tx.objectStore('restaurant-list');
+function addAllToDB(storeName, items) {
+  idb.open('restaurants-reviews', 1).then(function(db) {
+    var tx = db.transaction(storeName, 'readwrite');
+    var store = tx.objectStore(storeName);
 
     return Promise.all(items.map(function(item) {
         console.log("Adding Item", item);
@@ -65,11 +66,17 @@ self.addEventListener('fetch', function(event) {
   console.log('Fetch event for ', event.request.url);
 
   // Checks if request is for restaurant
-  if (event.request.url.indexOf('localhost:1337/restaurants') >= 0) {
+  if (event.request.url.indexOf('localhost:1337/restaurants') >= 0 || event.request.url.indexOf('localhost:1337/reviews') >= 0) {
+    var lastIndexOfSlash = event.request.url.lastIndexOf('/');
+    var storeName = event.request.url.substring(lastIndexOfSlash + 1);
+
     event.respondWith(
-    idb.open('restautrants', 1).then(function(db) {
-      var tx = db.transaction('restaurant-list', 'readonly');
-      var store = tx.objectStore('restaurant-list');
+    idb.open('restaurants-reviews', 1).then(function(db) {
+
+      console.log("RequestDB", storeName);
+
+      var tx = db.transaction(storeName, 'readonly');
+      var store = tx.objectStore(storeName);
       return store.getAll();
     }).then((rs) => {
       console.log("All Data", rs);
@@ -84,7 +91,7 @@ self.addEventListener('fetch', function(event) {
               .then(function(data) {
                 console.log(event.request.url, 'json data', data)
                 // Adds data to database
-                addAllToDB(data);
+                addAllToDB( storeName, data);
                 console.log('Saving to DB and responding from FETCH', data);
                 return response;
                 // event.respondWith(data);
