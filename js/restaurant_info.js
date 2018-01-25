@@ -14,18 +14,6 @@ window.initMap = () => {
         center: restaurant.latlng,
         scrollwheel: false
       });
-
-       /*  Commented code after reviewer said that map needs to be included in focus */
-
-      // removes focus assuming map doesn't need focus
-      // https://stackoverflow.com/questions/30531075/
-      // google.maps.event.addListener(self.map, "tilesloaded", function(){
-      //   [].slice.apply(document.querySelectorAll('#map a,div,button')).forEach(function(item) {
-      //     item.setAttribute('tabindex','-1');
-      //   });
-      //   // div for map satellite buttons
-      //   // button for right side zoom buttons
-      // });
       fillBreadcrumb();
       DBHelper.mapMarkerForRestaurant(self.restaurant, self.map);
     }
@@ -47,6 +35,9 @@ fetchRestaurantFromURL = (callback) => {
   } else {
     DBHelper.fetchRestaurantById(id, (error, restaurant) => {
       self.restaurant = restaurant;
+
+      console.log("Restaurant",restaurant);
+
       if (!restaurant) {
         console.error(error);
         return;
@@ -54,6 +45,34 @@ fetchRestaurantFromURL = (callback) => {
       fillRestaurantHTML();
       callback(null, restaurant)
     });
+  }
+};
+
+fetchReviewFromURL = () => {
+  if (self.review) { // restaurant already fetched!
+    // callback(null, self.restaurant)
+    return;
+  }
+
+  const id = getParameterByName('id');
+
+
+  if (!id) { // no id found in URL
+    error = 'No restaurant id in URL'
+    // callback(error, null);
+  } else {
+    DBHelper.fetchReviewById(id,(error, reviews) => {
+
+      self.reviews = reviews;
+
+      if (!reviews) {
+        console.error(error);
+        fillReviewsHTML(null);
+        return;
+      }
+      console.log("Review",reviews);
+      fillReviewsHTML();
+    })
   }
 }
 
@@ -85,7 +104,8 @@ fillRestaurantHTML = (restaurant = self.restaurant) => {
     fillRestaurantHoursHTML();
   }
   // fill reviews
-  fillReviewsHTML();
+  // fillReviewsHTML();
+  fetchReviewFromURL();
 }
 
 /**
@@ -111,7 +131,10 @@ fillRestaurantHoursHTML = (operatingHours = self.restaurant.operating_hours) => 
 /**
  * Create all reviews HTML and add them to the webpage.
  */
-fillReviewsHTML = (reviews = self.restaurant.reviews) => {
+fillReviewsHTML = (reviews = self.reviews) => {
+
+  console.log("FillReview", reviews);
+
   const container = document.getElementById('reviews-container');
   const title = document.createElement('h3');
   title.innerHTML = 'Reviews';
@@ -141,7 +164,7 @@ createReviewHTML = (review) => {
   li.appendChild(name);
 
   const date = document.createElement('p');
-  date.innerHTML = review.date;
+  date.innerHTML = getDateFromTimestamp(review.createdAt);
   li.appendChild(date);
 
   const rating = document.createElement('p');
@@ -168,6 +191,14 @@ fillBreadcrumb = (restaurant=self.restaurant) => {
   // https://www.w3.org/TR/wai-aria-practices/examples/breadcrumb/index.html
   li.setAttribute('aria-current', 'page');
   breadcrumb.appendChild(li);
+}
+
+// GET DATE FROM TIMESTAMP
+
+getDateFromTimestamp = (timeStamp) => {
+  var date = new Date(timeStamp);
+
+  return date.getDate() +'/' + (date.getMonth() + 1) + '/' + date.getFullYear();
 }
 
 /**

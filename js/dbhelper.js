@@ -34,13 +34,34 @@ class DBHelper {
   }
 
   /**
+   * Fetch all reviews.
+   */
+  static fetchReview(callback) {
+    fetch('http://localhost:1337/reviews')
+      .then(response => {
+          if (response.status === 200) {
+            response.json()
+              .then(json => {
+                console.log("Review Response", json);
+                callback(null, json);
+                return
+              }).catch(error => {
+              callback(error, null)
+            });
+          } else {
+            callback((`Request failed. Returned status of ${response.status}`), null);
+          }
+        }
+      ).catch(error => callback(error, null));
+  }
+
+  /**
    * Fetch a restaurant by its ID.
    */
   static fetchRestaurantById(id, callback) {
     // fetch all restaurants with proper error handling.
     DBHelper.fetchRestaurants((error, restaurants) => {
 
-      console.log(restaurant);
       if (error) {
         callback(error, null);
       } else {
@@ -52,6 +73,29 @@ class DBHelper {
         }
       }
     });
+  }
+
+  /**
+   * Fetch a review by restaurant id.
+   */
+  static fetchReviewById(id, callback) {
+
+    DBHelper.fetchReview((error, reviews)=> {
+      if (error) {
+        callback(error, null);
+      } else {
+        const review = reviews.filter((r) => {
+          return r.restaurant_id == id;
+        });
+
+        if (review) { // Got the review
+          callback(null, review);
+        } else { // Restaurant does not exist in the database
+          callback('Restaurant does not exist', null);
+        }
+      }
+
+    })
   }
 
   /**
