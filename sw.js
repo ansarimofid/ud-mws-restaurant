@@ -67,34 +67,46 @@ addEventListener('fetch', event => {
   // Prevent the default, and handle the request ourselves.
   event.respondWith(async function () {
 
+    // Check if request is an API request
     if (event.request.url.indexOf('localhost:1337/restaurants') >= 0 || event.request.url.indexOf('localhost:1337/reviews') >= 0) {
       var lastIndexOfSlash = event.request.url.lastIndexOf('/');
       var storeName = event.request.url.substring(lastIndexOfSlash + 1);
 
+      // Open the indexDB database
       return idb.open('restaurants-reviews', 1).then(function (db) {
-
-        console.log("RequestDB", storeName);
 
         var tx = db.transaction(storeName, 'readonly');
         var store = tx.objectStore(storeName);
+
+        // Return items from database
         return store.getAll();
       }).then((rs) => {
-        console.log("All Data", rs);
-        // If if indexdb contains data
-        if (!rs.length) {
-          console.log('Attempting to fetch from network ', event.request);
-          // Fetches data from network
-          return fetch(event.request)
-            .then(function (response) {
+        console.log("All Data From IndexDB", rs);
 
+        // If if indexdb doesn't contains data
+        if (!rs.length) {
+          console.log('Attempting to fetch from network ', event.request.url);
+          // Fetches data from network
+          return fetch(event.request.url)
+            .then((response) => {
+
+              // return response;
               return response.json()
                 .then(function (data) {
                   console.log(event.request.url, 'json data', data);
+
                   // Adds data to database
                   addAllToDB(storeName, data);
                   console.log('Saving to DB and responding from FETCH', data);
-                  return response;
-                  // event.respondWith(data);
+
+                  var init = {
+                    status: 200,
+                    statusText: "OK",
+                    headers: {'Content-Type': 'application/jso'}
+                  };
+
+                  const fetchResponse = new Response(JSON.stringify(data), init);
+                  return fetchResponse;
                 })
             })
         } else {
@@ -107,9 +119,9 @@ addEventListener('fetch', event => {
             headers: {'Content-Type': 'application/jso'}
           };
 
-          const respo = new Response(JSON.stringify(rs), init);
-          console.log("Response to send to fetch ", rs);
-          return respo;
+          const indexDBResponse = new Response(JSON.stringify(rs), init);
+          console.log("Response from indexDB to send to fetch ", rs);
+          return indexDBResponse;
         }
       })
     } else {
