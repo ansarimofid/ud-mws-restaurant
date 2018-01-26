@@ -36,8 +36,6 @@ fetchRestaurantFromURL = (callback) => {
     DBHelper.fetchRestaurantById(id, (error, restaurant) => {
       self.restaurant = restaurant;
 
-      console.log("Restaurant",restaurant);
-
       if (!restaurant) {
         console.error(error);
         return;
@@ -71,7 +69,6 @@ fetchReviewFromURL = () => {
         fillReviewsHTML(null);
         return;
       }
-      console.log("Review",reviews);
       fillReviewsHTML();
     })
   }
@@ -133,8 +130,7 @@ fillRestaurantHoursHTML = (operatingHours = self.restaurant.operating_hours) => 
  * Create all reviews HTML and add them to the webpage.
  */
 fillReviewsHTML = (reviews = self.reviews) => {
-
-  console.log("FillReview", reviews);
+  // console.log("FillReview", reviews);
 
   const container = document.getElementById('reviews-container');
   const title = document.createElement('h3');
@@ -212,7 +208,6 @@ fillFloatingAction = (restaurant=self.restaurant) => {
     favImg.alt = 'restaurant is favourite';
     favImg.src = 'img/icons/ic_favorite_black_24px.svg';
     favImg.className = 'fav-img fav-fill';
-    console.log("Favourite val", restaurant.is_favorite);
   } else {
     favImg.alt = 'restaurant is not favourite';
     favImg.src = 'img/icons/ic_favorite_border_black.svg';

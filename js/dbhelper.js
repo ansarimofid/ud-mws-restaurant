@@ -18,7 +18,6 @@ class DBHelper {
   static fetchRestaurants(callback) {
     fetch(DBHelper.DATABASE_URL)
       .then(response => {
-        console.log('TOP LEVEL Response ', response)
         if (response.status === 200) {
           response.json()
             .then(json => {
@@ -42,7 +41,6 @@ class DBHelper {
           if (response.status === 200) {
             response.json()
               .then(json => {
-                console.log("Review Response", json);
                 callback(null, json);
                 return
               }).catch(error => {
