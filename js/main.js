@@ -81,7 +81,7 @@ window.initMap = () => {
     zoom: 12,
     center: loc,
     scrollwheel: false,
-    format:'jpg'
+    format: 'jpg'
   });
 
   updateRestaurants();
@@ -141,35 +141,58 @@ fillRestaurantsHTML = (restaurants = self.restaurants) => {
  */
 createRestaurantHTML = (restaurant) => {
   const li = document.createElement('li');
-  li.setAttribute('role','listitem');
+  li.setAttribute('role', 'listitem');
 
   const favIcon = document.createElement('span');
   favIcon.className = 'fav-icon';
-  favIcon.setAttribute('data-id',restaurant.id);
+  favIcon.setAttribute('data-id', restaurant.id);
   const favImg = document.createElement('img');
-  favImg.className = 'fav-img';
 
-  if (restaurant.is_favorite) {
+
+  if (restaurant.is_favorite === 'true') {
     favImg.alt = 'restaurant is favourite';
     favImg.src = 'img/icons/ic_favorite_black_24px.svg';
+    favImg.className = 'fav-img fav-fill';
+    console.log("Favourite val", restaurant.is_favorite);
   } else {
     favImg.alt = 'restaurant is not favourite';
     favImg.src = 'img/icons/ic_favorite_border_black.svg';
+    favImg.className = 'fav-img';
   }
 
-  favIcon.addEventListener('click',(e) => {
-    DBHelper.makeRestaurantFavourite(restaurant.id,(error, response) => {
-      if (response) {
-        favImg.alt = 'restaurant is favourite';
-        favImg.src = 'img/icons/ic_favorite_black_24px.svg';
-        console.log("Attribute",  e.target.attributes);
-        e.target.attributes;
+  favImg.addEventListener('click', (e) => {
+
+    if (e.target === e.currentTarget) {
+
+      var classAttr = e.target.className;
+
+      if (classAttr === 'fav-img') {
+        DBHelper.restaurantFavouriteHandler(restaurant.id, true, (error, response) => {
+          if (response) {
+            favImg.alt = 'restaurant is favourite';
+            favImg.src = 'img/icons/ic_favorite_black_24px.svg';
+            e.target.className = 'fav-img fav-fill';
+          }
+          else {
+            alert("Something Went Wrong");
+            console.log(error);
+          }
+        })
+
+      } else {
+        DBHelper.restaurantFavouriteHandler(restaurant.id, false, (error, response) => {
+          if (response) {
+            favImg.alt = 'restaurant is not favourite';
+            favImg.src = 'img/icons/ic_favorite_border_black.svg';
+            e.target.className = 'fav-img';
+          }
+          else {
+            alert("Something Went Wrong");
+            console.log(error);
+          }
+        })
       }
-      else {
-        alert("Something Went Wrong");
-        console.log(error);
-      }
-    })
+    }
   });
 
   favIcon.append(favImg);
@@ -178,10 +201,10 @@ createRestaurantHTML = (restaurant) => {
 
   const image = document.createElement('img');
   image.className = 'restaurant-img js-lazy-image';
-  image.alt = restaurant.name +' restautrant';
+  image.alt = restaurant.name + ' restautrant';
   var imgSrc = DBHelper.imageUrlForRestaurant(restaurant);
 
-  image.setAttribute('data-src', imgSrc+'_thumb.jpg');
+  image.setAttribute('data-src', imgSrc + '_thumb.jpg');
   li.append(image);
 
   const name = document.createElement('h3');
@@ -205,7 +228,7 @@ createRestaurantHTML = (restaurant) => {
   more.href = DBHelper.urlForRestaurant(restaurant);
   li.append(more);
 
-  li.onload =  lazyLoad();
+  li.onload = lazyLoad();
 
   return li
 }

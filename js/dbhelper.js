@@ -218,14 +218,14 @@ class DBHelper {
 
   // make retaurant favourite
 
-  static makeRestaurantFavourite(restaurant_id, callback) {
+  static restaurantFavouriteHandler(restaurant_id, favVal,callback) {
 
     var myInit = { method: 'PUT',
       headers: new Headers(),
       mode: 'cors',
       cache: 'default' };
 
-    fetch('http://localhost:1337/restaurants/'+restaurant_id+'/?is_favorite=true', myInit)
+    fetch('http://localhost:1337/restaurants/'+restaurant_id+'/?is_favorite='+favVal, myInit)
       .then(response => {
           if (response.status === 200) {
             callback(null, 1);
@@ -235,5 +235,6 @@ class DBHelper {
         }
       ).catch(error => callback(error, null));
   }
+
 
 }
