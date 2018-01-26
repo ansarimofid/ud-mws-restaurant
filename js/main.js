@@ -85,20 +85,8 @@ window.initMap = () => {
     format:'jpg'
   });
 
- /*  Commented code after reviewer said that map needs to be included in focus */
-
-  // removes focus assuming map doesn't need focus
-  // https://stackoverflow.com/questions/30531075/
-  // google.maps.event.addListener(self.map, "tilesloaded", function(){
-  //   [].slice.apply(document.querySelectorAll('#map a,div,button')).forEach(function(item) {
-  //     item.setAttribute('tabindex','-1');
-  //   });
-  //   // div for map satellite buttons
-  //   // button for right side zoom buttons
-  // });
-
   updateRestaurants();
-}
+};
 
 /**
  * Update page and map for current restaurants.
@@ -155,6 +143,24 @@ fillRestaurantsHTML = (restaurants = self.restaurants) => {
 createRestaurantHTML = (restaurant) => {
   const li = document.createElement('li');
   li.setAttribute('role','listitem');
+
+  const favIcon = document.createElement('span');
+  favIcon.className = 'fav-icon';
+  favIcon.setAttribute('data-id',restaurant.id);
+  const favImg = document.createElement('img');
+  favImg.className = 'fav-img';
+
+  if (restaurant.is_favorite) {
+    favImg.alt = 'restaurant is favourite';
+    favImg.src = 'img/icons/ic_favorite_black_24px.svg';
+  } else {
+    favImg.alt = 'restaurant is not favourite';
+    favImg.src = 'img/icons/ic_favorite_border_black.svg';
+  }
+
+  favIcon.append(favImg);
+  li.append(favIcon);
+
 
   const image = document.createElement('img');
   image.className = 'restaurant-img js-lazy-image';

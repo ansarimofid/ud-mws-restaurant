@@ -152,6 +152,7 @@ nav h1 a {
   justify-content: center
 }
 #restaurants-list li {
+  position: relative;
   background-color: #fff;
   /* border: 2px solid #ccc; */
   font-family: Arial,sans-serif;
@@ -300,6 +301,22 @@ nav h1 a {
 }
 #restaurant-hours td {
   color: #666;
+}
+
+/*Fav Icon*/
+
+.fav-icon {
+  position: absolute;
+  right: 8px;
+  top: 8px;
+  background-color: #fff;
+  border-radius: 50%;
+  width: 35px;
+  height: 35px;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  cursor: pointer;
 }
 
 @media (max-width:647px) {
