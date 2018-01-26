@@ -160,6 +160,7 @@ createRestaurantHTML = (restaurant) => {
     favImg.className = 'fav-img';
   }
 
+  // Adds EventListner to change favourite options
   favImg.addEventListener('click', (e) => {
 
     if (e.target === e.currentTarget) {

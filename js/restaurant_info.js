@@ -43,6 +43,7 @@ fetchRestaurantFromURL = (callback) => {
         return;
       }
       fillRestaurantHTML();
+      fillFloatingAction();
       callback(null, restaurant)
     });
   }
@@ -191,6 +192,72 @@ fillBreadcrumb = (restaurant=self.restaurant) => {
   // https://www.w3.org/TR/wai-aria-practices/examples/breadcrumb/index.html
   li.setAttribute('aria-current', 'page');
   breadcrumb.appendChild(li);
+}
+
+// Fill floating action
+
+fillFloatingAction = (restaurant=self.restaurant) => {
+
+  var floatingAction = document.querySelector('#floating-action');
+
+
+
+  const favIcon = document.createElement('span');
+  favIcon.className = 'fav-icon';
+  favIcon.setAttribute('data-id', restaurant.id);
+  const favImg = document.createElement('img');
+
+
+  if (restaurant.is_favorite === 'true') {
+    favImg.alt = 'restaurant is favourite';
+    favImg.src = 'img/icons/ic_favorite_black_24px.svg';
+    favImg.className = 'fav-img fav-fill';
+    console.log("Favourite val", restaurant.is_favorite);
+  } else {
+    favImg.alt = 'restaurant is not favourite';
+    favImg.src = 'img/icons/ic_favorite_border_black.svg';
+    favImg.className = 'fav-img';
+  }
+
+  // Adds EventListner to change favourite options
+  favImg.addEventListener('click', (e) => {
+
+    if (e.target === e.currentTarget) {
+
+      var classAttr = e.target.className;
+
+      if (classAttr === 'fav-img') {
+        DBHelper.restaurantFavouriteHandler(restaurant.id, true, (error, response) => {
+          if (response) {
+            favImg.alt = 'restaurant is favourite';
+            favImg.src = 'img/icons/ic_favorite_black_24px.svg';
+            e.target.className = 'fav-img fav-fill';
+          }
+          else {
+            alert("Something Went Wrong");
+            console.log(error);
+          }
+        })
+
+      } else {
+        DBHelper.restaurantFavouriteHandler(restaurant.id, false, (error, response) => {
+          if (response) {
+            favImg.alt = 'restaurant is not favourite';
+            favImg.src = 'img/icons/ic_favorite_border_black.svg';
+            e.target.className = 'fav-img';
+          }
+          else {
+            alert("Something Went Wrong");
+            console.log(error);
+          }
+        })
+      }
+    }
+  });
+
+  favIcon.append(favImg);
+  floatingAction.append(favIcon);
+
 }
 
 // GET DATE FROM TIMESTAMP
