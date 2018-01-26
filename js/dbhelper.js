@@ -215,4 +215,25 @@ class DBHelper {
     return marker;
   }
 
+
+  // make retaurant favourite
+
+  static makeRestaurantFavourite(restaurant_id, callback) {
+
+    var myInit = { method: 'PUT',
+      headers: new Headers(),
+      mode: 'cors',
+      cache: 'default' };
+
+    fetch('http://localhost:1337/restaurants/'+restaurant_id+'/?is_favorite=true', myInit)
+      .then(response => {
+          if (response.status === 200) {
+            callback(null, 1);
+          } else {
+            callback((`Request failed. Returned status of ${response.status}`), null);
+          }
+        }
+      ).catch(error => callback(error, null));
+  }
+
 }

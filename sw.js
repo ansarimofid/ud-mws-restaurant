@@ -68,7 +68,7 @@ addEventListener('fetch', event => {
   event.respondWith(async function () {
 
     // Check if request is an API request
-    if (event.request.url.indexOf('localhost:1337/restaurants') >= 0 || event.request.url.indexOf('localhost:1337/reviews') >= 0) {
+    if (checkForIndexDBRequest(event.request.url)) {
       var lastIndexOfSlash = event.request.url.lastIndexOf('/');
       var storeName = event.request.url.substring(lastIndexOfSlash + 1);
 
@@ -153,6 +153,20 @@ addEventListener('fetch', event => {
   }());
 });
 
+
+function checkForIndexDBRequest(str) {
+  var r1 = /^http:\/\/localhost:1337\/restaurants$/;
+  var r2 = /^http:\/\/localhost:1337\/reviews$/;
+
+  var m1 = str.match(r1);
+  var m2 = str.match(r2);
+
+  if (m1 || m2)
+    return 1;
+
+  return 0;
+
+}
 
 /* delete old cache */
 self.addEventListener('activate', function (event) {

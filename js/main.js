@@ -10,7 +10,6 @@ var markers = [];
 document.addEventListener('DOMContentLoaded', (event) => {
   fetchNeighborhoods();
   fetchCuisines();
-  // lazyLoad();
 });
 
 /**
@@ -158,6 +157,21 @@ createRestaurantHTML = (restaurant) => {
     favImg.src = 'img/icons/ic_favorite_border_black.svg';
   }
 
+  favIcon.addEventListener('click',(e) => {
+    DBHelper.makeRestaurantFavourite(restaurant.id,(error, response) => {
+      if (response) {
+        favImg.alt = 'restaurant is favourite';
+        favImg.src = 'img/icons/ic_favorite_black_24px.svg';
+        console.log("Attribute",  e.target.attributes);
+        e.target.attributes;
+      }
+      else {
+        alert("Something Went Wrong");
+        console.log(error);
+      }
+    })
+  });
+
   favIcon.append(favImg);
   li.append(favIcon);
 
@@ -210,4 +224,5 @@ addMarkersToMap = (restaurants = self.restaurants) => {
   });
 }
 
+//Adds click event to fav icon
 
