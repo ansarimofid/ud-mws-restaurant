@@ -19,6 +19,59 @@ self.addEventListener('activate', event => {
   event.waitUntil(self.clients.claim());
 });
 
+self.addEventListener('sync', function (event) {
+  if (event.tag === 'review-fetch') {
+    event.waitUntil(fetchReview());
+  }
+});
+
+
+function fetchReview() {
+
+  idb.open('review', 1)
+    .then(function (db) {
+    var transaction = db.transaction('outbox', 'readonly');
+    return transaction.objectStore('outbox').getAll();
+  }).then(function (reviews) {
+    console.log("All Reviews",reviews);
+
+    return Promise.all(reviews.map(function(review) {
+
+      var reviewID = review.id;
+
+      delete review.id;
+
+      console.log("review inside promis", review);
+
+      return fetch('http://localhost:1337/reviews/', {
+        method: 'POST',
+        body: JSON.stringify(review),
+        headers: {
+          'Accept': 'application/json',
+          'Content-Type': 'application/json'
+        }
+      }).then(function(response) {
+        console.log(response);
+        return response.json();
+      }).then(function(data) {
+
+        console.log("Success response",data);
+
+        if (data) {
+
+          idb.open('review', 1)
+            .then(function (db) {
+              var transaction = db.transaction('outbox', 'readwrite');
+              return transaction.objectStore('outbox').delete(reviewID);
+            })
+          // return store.outbox('readwrite').then(function(outbox) {});
+        }
+      })
+    }))
+
+  }).catch(function(err) { console.error(err); });
+}
+
 
 /*
  * Creates indexDb Database
@@ -186,3 +239,4 @@ self.addEventListener('activate', function (event) {
     })
   );
 });
+

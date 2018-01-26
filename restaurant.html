@@ -51,7 +51,19 @@
     <!-- end restaurant -->
 
     <section id="restaurant-review-form">
-
+      <form action="" id="review-form">
+        <input type="text" placeholder="Name" id="name">
+        <select name="rating" id="rating">
+          <option value="none" disabled>Select Rating</option>
+          <option value="1">1</option>
+          <option value="2">2</option>
+          <option value="3">3</option>
+          <option value="4">4</option>
+          <option value="5">5</option>
+        </select>
+        <textarea name="comment" id="comment" cols="30" rows="10" placeholder="Add Your Review"></textarea>
+        <input id="" type="submit">
+      </form>
     </section>
     <!-- Beginning reviews -->
     <section id="reviews-container">
@@ -68,7 +80,7 @@
   <!-- End footer -->
 
   <!-- Beginning scripts -->
-
+  <script type="application/javascript" charset="utf-8" src="js/idb.min.js"></script>
   <script type="application/javascript" charset="utf-8" src="js/sw_loader.js"></script>
 
   <!-- Database helpers -->
