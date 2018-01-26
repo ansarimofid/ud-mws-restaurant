@@ -9,70 +9,6 @@ let version = '1.4.0';
 
 let staticCacheName = 'mws-rrs1-' + version;
 
-self.addEventListener('activate', event => {
-  event.waitUntil(
-    createDB()
-  )
-})
-
-self.addEventListener('activate', event => {
-  event.waitUntil(self.clients.claim());
-});
-
-self.addEventListener('sync', function (event) {
-  if (event.tag === 'review-fetch') {
-    event.waitUntil(fetchReview());
-  }
-});
-
-
-function fetchReview() {
-
-  idb.open('review', 1)
-    .then(function (db) {
-    var transaction = db.transaction('outbox', 'readonly');
-    return transaction.objectStore('outbox').getAll();
-  }).then(function (reviews) {
-    console.log("All Reviews",reviews);
-
-    return Promise.all(reviews.map(function(review) {
-
-      var reviewID = review.id;
-
-      delete review.id;
-
-      console.log("review inside promis", review);
-
-      return fetch('http://localhost:1337/reviews/', {
-        method: 'POST',
-        body: JSON.stringify(review),
-        headers: {
-          'Accept': 'application/json',
-          'Content-Type': 'application/json'
-        }
-      }).then(function(response) {
-        console.log(response);
-        return response.json();
-      }).then(function(data) {
-
-        console.log("Success response",data);
-
-        if (data) {
-
-          idb.open('review', 1)
-            .then(function (db) {
-              var transaction = db.transaction('outbox', 'readwrite');
-              return transaction.objectStore('outbox').delete(reviewID);
-            })
-          // return store.outbox('readwrite').then(function(outbox) {});
-        }
-      })
-    }))
-
-  }).catch(function(err) { console.error(err); });
-}
-
-
 /*
  * Creates indexDb Database
  */
@@ -85,6 +21,76 @@ function createDB() {
     var restStore = upgradeDB.createObjectStore('restaurants', {keyPath: 'id'})
     var reviewStore = upgradeDB.createObjectStore('reviews', {keyPath: 'id'})
   })
+}
+
+self.addEventListener('activate', event => {
+  event.waitUntil(
+    createDB()
+  )
+});
+
+self.addEventListener('activate', event => {
+  event.waitUntil(self.clients.claim());
+});
+
+// Background sync of review
+
+self.addEventListener('sync', function (event) {
+  if (event.tag === 'outbox') {
+    event.waitUntil(fetchReview()
+      .then(()=>{
+        console.log("Successfully Synced")
+      })
+      .catch(() => {
+        console.log("Error syncing the reviews");
+      })
+    );
+  }
+});
+
+
+function fetchReview() {
+
+  // Opens indexDB
+  return idb.open('review', 1)
+    .then(function (db) {
+    var transaction = db.transaction('outbox', 'readonly');
+    return transaction.objectStore('outbox').getAll();
+  }).then(function (reviews) {
+
+    return Promise.all(reviews.map(function(review) {
+
+      var reviewID = review.id;
+
+      delete review.id;
+
+      console.log("review inside promis", review);
+
+      // Fetching request the review
+      return fetch('http://localhost:1337/reviews', {
+        method: 'POST',
+        body: review,
+        headers: {
+          'Accept': 'application/json',
+          'Content-Type': 'application/json'
+        }
+      }).then(function(response) {
+        console.log(response);
+        return response.json();
+      }).then(function(data) {
+
+        if (data) {
+          // Delecting data from indexDB
+          idb.open('review', 1)
+            .then(function (db) {
+              var transaction = db.transaction('outbox', 'readwrite');
+              return transaction.objectStore('outbox').delete(reviewID);
+            })
+        }
+      })
+    }))
+
+  });
 }
 
 /*
