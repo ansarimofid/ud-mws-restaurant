@@ -45,8 +45,8 @@ self.addEventListener('sync', function (event) {
       .then(() => {
         console.log("Successfully Synced")
       })
-      .catch(() => {
-        console.log("Error syncing the reviews");
+      .catch((error) => {
+        console.log("Error syncing the reviews",error);
       })
     );
   }

@@ -271,7 +271,7 @@ nav h1 a {
   box-sizing: border-box;
 }
 #reviews-container {
-  padding: 30px 40px 80px;
+  padding: 30px 40px
 }
 #reviews-container h2 {
   color: #165B8E;
@@ -306,7 +306,7 @@ nav h1 a {
 /*Fav Icon*/
 
 #restaurant-review-form {
-  padding-top: 40px;
+  padding: 30px 40px 100px;
 }
 
 .fav-icon {
