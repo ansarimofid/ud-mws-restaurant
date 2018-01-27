@@ -78,7 +78,26 @@ class DBHelper {
    */
   static fetchReviewById(id, callback) {
 
-    DBHelper.fetchReview((error, reviews)=> {
+    fetch('http://localhost:1337/reviews/?restaurant_id='+id)
+      .then(response => {
+          if (response.status === 200) {
+            response.json()
+              .then(json => {
+
+                console.log("Review From fetchRestaurant", json);
+
+                callback(null, json);
+                return
+              }).catch(error => {
+              callback(error, null)
+            });
+          } else {
+            callback((`Request failed. Returned status of ${response.status}`), null);
+          }
+        }
+      ).catch(error => callback(error, null));
+
+    /*DBHelper.fetchReview((error, reviews)=> {
       if (error) {
         callback(error, null);
       } else {
@@ -93,7 +112,7 @@ class DBHelper {
         }
       }
 
-    })
+    })*/
   }
 
   /**

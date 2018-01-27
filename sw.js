@@ -18,8 +18,12 @@ function createDB() {
 
     console.log("Creating Restaurant List Object Store");
 
-    var restStore = upgradeDB.createObjectStore('restaurants', {keyPath: 'id'})
-    var reviewStore = upgradeDB.createObjectStore('reviews', {keyPath: 'id'})
+    upgradeDB.createObjectStore('restaurants', {keyPath: 'id'});
+
+    for (var i = 1; i <= 10; i++) {
+      upgradeDB.createObjectStore('reviews-' + i, {keyPath: 'id'})
+    }
+    // var reviewStore = upgradeDB.createObjectStore('reviews', {keyPath: 'id'})
   })
 }
 
@@ -38,7 +42,7 @@ self.addEventListener('activate', event => {
 self.addEventListener('sync', function (event) {
   if (event.tag === 'outbox') {
     event.waitUntil(fetchReview()
-      .then(()=>{
+      .then(() => {
         console.log("Successfully Synced")
       })
       .catch(() => {
@@ -54,45 +58,45 @@ function fetchReview() {
   // Opens indexDB
   return idb.open('review', 1)
     .then(function (db) {
-    var transaction = db.transaction('outbox', 'readonly');
-    return transaction.objectStore('outbox').getAll();
-  }).then(function (reviews) {
+      var transaction = db.transaction('outbox', 'readonly');
+      return transaction.objectStore('outbox').getAll();
+    }).then(function (reviews) {
 
-    return Promise.all(reviews.map(function(review) {
+      return Promise.all(reviews.map(function (review) {
 
-      var reviewID = review.id;
+        var reviewID = review.id;
 
-      delete review.id;
+        delete review.id;
 
-      console.log("review inside promis", review);
+        console.log("review inside promis", review);
 
-      // Fetching request the review
-      return fetch('http://localhost:1337/reviews', {
-        method: 'POST',
-        body: JSON.stringify(review),
-        headers: {
-          'Accept': 'application/json',
-          'Content-Type': 'application/json'
-        }
-      }).then(function(response) {
-        console.log(response);
-        return response.json();
-      }).then(function(data) {
+        // Fetching request the review
+        return fetch('http://localhost:1337/reviews', {
+          method: 'POST',
+          body: JSON.stringify(review),
+          headers: {
+            'Accept': 'application/json',
+            'Content-Type': 'application/json'
+          }
+        }).then(function (response) {
+          console.log(response);
+          return response.json();
+        }).then(function (data) {
 
-        console.log("Successfully Added data ",data);
+          console.log("Successfully Added data ", data);
 
-        if (data) {
-          // Deleting data from indexDB
-          idb.open('review', 1)
-            .then(function (db) {
-              var transaction = db.transaction('outbox', 'readwrite');
-              return transaction.objectStore('outbox').delete(reviewID);
-            })
-        }
-      })
-    }))
+          if (data) {
+            // Deleting data from indexDB
+            idb.open('review', 1)
+              .then(function (db) {
+                var transaction = db.transaction('outbox', 'readwrite');
+                return transaction.objectStore('outbox').delete(reviewID);
+              })
+          }
+        })
+      }))
 
-  });
+    });
 }
 
 /*
@@ -105,7 +109,7 @@ function addAllToDB(storeName, items) {
     var store = tx.objectStore(storeName);
 
     return Promise.all(items.map(function (item) {
-        console.log("Adding Item", item);
+        // console.log("Adding Item", item);
         return store.put(item);
       })
     ).then(function (e) {
@@ -131,7 +135,14 @@ addEventListener('fetch', event => {
     // Check if request is an API request
     if (checkForIndexDBRequest(event.request.url)) {
       var lastIndexOfSlash = event.request.url.lastIndexOf('/');
+
       var storeName = event.request.url.substring(lastIndexOfSlash + 1);
+
+      if (storeName.lastIndexOf('restaurant_id') > 0) {
+        storeName = 'reviews-' + storeName.substring(storeName.lastIndexOf('=') + 1);
+      }
+
+      console.log(storeName);
 
       // Open the indexDB database
       return idb.open('restaurants-reviews', 1).then(function (db) {
@@ -217,7 +228,7 @@ addEventListener('fetch', event => {
 
 function checkForIndexDBRequest(str) {
   var r1 = /^http:\/\/localhost:1337\/restaurants$/;
-  var r2 = /^http:\/\/localhost:1337\/reviews$/;
+  var r2 = /^http:\/\/localhost:1337\/reviews/;
 
   var m1 = str.match(r1);
   var m2 = str.match(r2);
