@@ -69,7 +69,7 @@ function fetchReview() {
       // Fetching request the review
       return fetch('http://localhost:1337/reviews', {
         method: 'POST',
-        body: review,
+        body: JSON.stringify(review),
         headers: {
           'Accept': 'application/json',
           'Content-Type': 'application/json'
@@ -79,8 +79,10 @@ function fetchReview() {
         return response.json();
       }).then(function(data) {
 
+        console.log("Successfully Added data ",data);
+
         if (data) {
-          // Delecting data from indexDB
+          // Deleting data from indexDB
           idb.open('review', 1)
             .then(function (db) {
               var transaction = db.transaction('outbox', 'readwrite');
