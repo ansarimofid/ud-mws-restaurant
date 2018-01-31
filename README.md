@@ -24,10 +24,11 @@ Start Server
 
 `# node server`
 
+
 ## Running the app
 
 ### Step 1
-Make sure `python` is installed.
+Make sure `node` is installed.
 
 
 ### Step 2
@@ -36,11 +37,11 @@ Go to the project Folder
 ```# cd projectFolder```
 
 ### Step 3
-if you have python 2.x
-run 
+Install Dependencies
 
-`python -m SimpleHTTPServer 3000`
+`# npm install`
 
-if `python3` is installed run
+### Step 4
+Start The Server
 
-`python3 -m http.server 3000`
+`# gulp`
