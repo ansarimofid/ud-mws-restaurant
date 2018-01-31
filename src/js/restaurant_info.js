@@ -90,7 +90,7 @@ fillRestaurantHTML = (restaurant = self.restaurant) => {
   var imgSrc = DBHelper.imageUrlForRestaurant(restaurant);
   image.alt = restaurant.name +' restautrant';
 
-  image.setAttribute('data-src', imgSrc+'.jpg');
+  image.setAttribute('data-src', imgSrc+'.webp');
 
   image.onload =  lazyLoad();
 

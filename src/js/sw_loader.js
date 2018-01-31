@@ -1,6 +1,6 @@
 if ('serviceWorker' in navigator) {
   navigator.serviceWorker
-    .register('/sw.js')
+    .register('/sw.min.js')
     .then(function (reg) {
       if ('sync' in reg) {
         // do stuff here

@@ -1,0 +1,41 @@
+{
+  "name": "ud-mws-restaurant",
+  "version": "1.0.0",
+  "description": "This project contains the code for restaurant app which is part of Udacity web speacialist course. The app is meant to follow all aspect of progressive app.",
+  "main": "sw.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/ansarimofid/ud-mws-restaurant.git"
+  },
+  "author": "ansarimofid",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/ansarimofid/ud-mws-restaurant/issues"
+  },
+  "homepage": "https://github.com/ansarimofid/ud-mws-restaurant#readme",
+  "devDependencies": {
+    "babel-core": "^6.26.0",
+    "babel-preset-env": "^1.6.1",
+    "browser-sync": "^2.23.6",
+    "compression": "^1.7.1",
+    "gulp": "^3.9.1",
+    "gulp-autoprefixer": "^4.1.0",
+    "gulp-babel": "^7.0.1",
+    "gulp-clean-css": "^3.9.2",
+    "gulp-concat": "^2.6.1",
+    "gulp-htmlclean": "^2.7.16",
+    "gulp-imagemin": "^4.1.0",
+    "gulp-inject": "^4.3.0",
+    "gulp-jsmin": "^0.1.5",
+    "gulp-rename": "^1.2.2",
+    "gulp-uglify": "^3.0.0",
+    "gulp-webp": "^3.0.0",
+    "gulp-webserver": "^0.9.1"
+  },
+  "dependencies": {
+    "gulp-htmlmin": "^4.0.0"
+  }
+}
