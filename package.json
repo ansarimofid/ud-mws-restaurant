@@ -17,8 +17,6 @@
   },
   "homepage": "https://github.com/ansarimofid/ud-mws-restaurant#readme",
   "devDependencies": {
-    "babel-core": "^6.26.0",
-    "babel-preset-env": "^1.6.1",
     "browser-sync": "^2.23.6",
     "compression": "^1.7.1",
     "gulp": "^3.9.1",
@@ -32,8 +30,7 @@
     "gulp-jsmin": "^0.1.5",
     "gulp-rename": "^1.2.2",
     "gulp-uglify": "^3.0.0",
-    "gulp-webp": "^3.0.0",
-    "gulp-webserver": "^0.9.1"
+    "gulp-webp": "^3.0.0"
   },
   "dependencies": {
     "gulp-htmlmin": "^4.0.0"

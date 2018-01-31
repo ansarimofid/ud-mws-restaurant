@@ -1,6 +1,5 @@
 // gulpfile.js
 var gulp = require('gulp');
-var webserver = require('gulp-webserver');
 var htmlclean = require('gulp-htmlclean');
 var cleanCSS = require('gulp-clean-css');
 var concat = require('gulp-concat');
@@ -9,7 +8,6 @@ var htmlmin = require('gulp-htmlmin');
 var autoprefixer = require('gulp-autoprefixer');
 var imagemin = require('gulp-imagemin');
 var webp = require('gulp-webp');
-var babel = require('gulp-babel');
 var browserSync = require('browser-sync');
 const compress = require('compression');
 const reload = browserSync.reload;
@@ -26,11 +24,12 @@ const paths = {
   html:     '**/*.html',
   css:      'css/**/*.css',
   js:       'js/**/*.js',
-  img:      'img/**/*.{png,jpg,jpeg,gif}',
+  img:      'img/*.{png,jpg,jpeg,gif}',
   icon:     'icon.png',
   manifest: 'manifest.json',
   sw:       'sw.js',
-  icons:    'img/icons/*.svg'
+  icons:    'img/icons/*.svg',
+  appICons:'img/app_icons/*.png'
 }
 
 gulp.task('html', function () {
@@ -82,16 +81,27 @@ gulp.task('img', function() {
 });
 
 gulp.task('icons', (() => {
-  gulp.src(paths.icons, {cwd: bases.src}).pipe(gulp.dest(bases.dist + 'img/icons'))
+  gulp.src(paths.icons, {cwd: bases.src})
+    .pipe(imagemin({
+      progressive: true,
+    }))
+    .pipe(gulp.dest(bases.dist + 'img/icons'))
+}));
+
+
+gulp.task('app-icons', (() => {
+  gulp.src(paths.appICons, {cwd: bases.src})
+    .pipe(gulp.dest(bases.dist + 'img/app_icons'))
 }));
 
 
 gulp.task('manifest', (() => {
-  gulp.src(paths.manifest, {cwd: bases.src}).pipe(gulp.dest(bases.dist))
+  gulp.src(paths.manifest, {cwd: bases.src})
+    .pipe(gulp.dest(bases.dist))
 }));
 
 
-gulp.task('build', ['html', 'css', 'js', 'sw','img','icons']);
+gulp.task('build', ['html', 'css', 'js', 'sw','img','icons', 'app-icons','manifest']);
 
 gulp.task('serve',['build'], (() => {
   browserSync.init({
